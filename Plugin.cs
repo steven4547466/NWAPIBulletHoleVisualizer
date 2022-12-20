@@ -22,7 +22,7 @@ namespace NWAPIBulletHoleVisualizer
         public static PluginHandler PluginHandler { get; private set; }
 
         [PluginPriority(LoadPriority.Highest)]
-        [PluginEntryPoint("NW Bullet Hole Visualizer", "1.1.1", "NW Bullet Hole Visualizer", "Steven4547466")]
+        [PluginEntryPoint("NW Bullet Hole Visualizer", "1.2.0", "NW Bullet Hole Visualizer", "Steven4547466")]
         void LoadPlugin()
         {
             Singleton = this;
@@ -51,6 +51,8 @@ namespace NWAPIBulletHoleVisualizer
         public void StartingRound()
         {
             Utils.RoundStartTime = DateTime.Now;
+            Utils.NextSeed = -1;
+            Utils.RegenningMap = false;
         }
 
         [PluginEvent(ServerEventType.RoundRestart)]
@@ -65,25 +67,42 @@ namespace NWAPIBulletHoleVisualizer
                 }
             }
             Utils.Visualizers.Clear();
-            if (!Utils.LoadedRound && Config.SerializeToWebhook != string.Empty)
+            if (!Utils.RegenningMap)
             {
-                byte[] json = JsonSerializer.Serialize(Utils.Bullets);
-                using (HttpClient httpClient = new HttpClient())
+                if (!Utils.LoadedRound && Config.SerializeToWebhook != string.Empty)
                 {
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent($"{{\"content\":\"{(Config.ServerNum != -1 ? $"Server {Config.ServerNum} " : "")}{(Config.ShowPort ? $"({Server.Port}) " : "")}Round at {Utils.RoundStartTime.ToString("dd-MM-yyyy H:mm:ss zzz")}\"}}"), "payload_json");
-                    form.Add(new ByteArrayContent(json), "Document", $"round-{Utils.RoundStartTime.ToString().Replace("/", "-")}.json");
-                    httpClient.PostAsync(Config.SerializeToWebhook, form).Wait();
-                    httpClient.Dispose();
+                    byte[] json = JsonSerializer.Serialize(new PostData(Utils.Bullets));
+                    using (HttpClient httpClient = new HttpClient())
+                    {
+                        MultipartFormDataContent form = new MultipartFormDataContent();
+                        form.Add(new StringContent($"{{\"content\":\"{(Config.ServerNum != -1 ? $"Server {Config.ServerNum} " : "")}{(Config.ShowPort ? $"({Server.Port}) " : "")}Round at {Utils.RoundStartTime.ToString("dd-MM-yyyy H:mm:ss zzz")}\"}}"), "payload_json");
+                        form.Add(new ByteArrayContent(json), "Document", $"round-{Utils.RoundStartTime.ToString().Replace("/", "-")}.json");
+                        httpClient.PostAsync(Config.SerializeToWebhook, form).Wait();
+                        httpClient.Dispose();
+                    }
                 }
-            }
 
-            Utils.SpawnedPrimitives.Clear();
-            Utils.Bullets.Clear();
-            Utils.LoadedRound = false;
+                Utils.SpawnedPrimitives.Clear();
+                Utils.Bullets.Clear();
+                Utils.LoadedRound = false;
+            }
         }
 
         [PluginConfig]
         public Config Config;
+    }
+
+    public class PostData
+    {
+        public int Seed { get; set; }
+        public List<Bullet> Bullets { get; set; }
+
+        public PostData() { }
+
+        public PostData(List<Bullet> bullets)
+        {
+            Seed = Map.Seed;
+            Bullets = bullets;
+        }
     }
 }

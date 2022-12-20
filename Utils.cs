@@ -29,6 +29,9 @@ namespace NWAPIBulletHoleVisualizer
 
         public static List<Bullet> Bullets = new List<Bullet>();
 
+        public static bool RegenningMap = false;
+        public static int NextSeed = -1;
+
         public static bool IsVisualizing(Player player)
         {
             return Visualizers.ContainsKey(player);
@@ -89,6 +92,13 @@ namespace NWAPIBulletHoleVisualizer
                     SpawnBullet(bullet, UserToColor[bullet.UserId]);
                 }
             }
+        }
+
+        public static void RegenMap(int seed)
+        {
+            RegenningMap = true;
+            NextSeed = seed;
+            Round.Restart();
         }
 
         public static void Clear() 

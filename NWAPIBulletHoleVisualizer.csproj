@@ -76,6 +76,7 @@
     <Compile Include="BulletHolePatch.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="LoadRoundCommand.cs" />
+    <Compile Include="MapGenPatch.cs" />
     <Compile Include="Optimize.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

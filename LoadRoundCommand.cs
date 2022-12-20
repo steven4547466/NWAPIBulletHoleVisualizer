@@ -33,9 +33,10 @@ namespace NWAPIBulletHoleVisualizer
             string json = File.ReadAllText(path);
 
             Utils.Clear();
-            List<Bullet> bullets = JsonSerializer.Deserialize<List<Bullet>>(json);
-            Utils.SetBullets(bullets);
+            PostData postData = JsonSerializer.Deserialize<PostData>(json);
+            Utils.SetBullets(postData.Bullets);
             Utils.LoadedRound = true;
+            Utils.RegenMap(postData.Seed);
 
             response = "Loaded.";
             return true;
