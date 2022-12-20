@@ -22,7 +22,7 @@ namespace NWAPIBulletHoleVisualizer
         public static PluginHandler PluginHandler { get; private set; }
 
         [PluginPriority(LoadPriority.Highest)]
-        [PluginEntryPoint("NW Bullet Hole Visualizer", "1.1.0", "NW Bullet Hole Visualizer", "Steven4547466")]
+        [PluginEntryPoint("NW Bullet Hole Visualizer", "1.1.1", "NW Bullet Hole Visualizer", "Steven4547466")]
         void LoadPlugin()
         {
             Singleton = this;
@@ -71,7 +71,7 @@ namespace NWAPIBulletHoleVisualizer
                 using (HttpClient httpClient = new HttpClient())
                 {
                     MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent($"{{\"content\":\"{(Config.ServerNum != -1 ? $"Server {Config.ServerNum} " : "")}Round at {Utils.RoundStartTime.ToString("dd-MM-yyyy H:mm:ss zzz")}\"}}"), "payload_json");
+                    form.Add(new StringContent($"{{\"content\":\"{(Config.ServerNum != -1 ? $"Server {Config.ServerNum} " : "")}{(Config.ShowPort ? $"({Server.Port}) " : "")}Round at {Utils.RoundStartTime.ToString("dd-MM-yyyy H:mm:ss zzz")}\"}}"), "payload_json");
                     form.Add(new ByteArrayContent(json), "Document", $"round-{Utils.RoundStartTime.ToString().Replace("/", "-")}.json");
                     httpClient.PostAsync(Config.SerializeToWebhook, form).Wait();
                     httpClient.Dispose();

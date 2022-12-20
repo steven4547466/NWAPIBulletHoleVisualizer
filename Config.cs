@@ -10,5 +10,6 @@ namespace NWAPIBulletHoleVisualizer
     {
         public string SerializeToWebhook { get; set; } = string.Empty;
         public int ServerNum { get; set; } = -1;
+        public bool ShowPort { get; set; } = true;
     }
 }
