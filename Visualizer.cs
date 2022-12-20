@@ -19,15 +19,12 @@ namespace NWAPIBulletHoleVisualizer
 
         private float Timer = 0;
 
-        private Dictionary<string, Color> UserToColor = new Dictionary<string, Color>();
-        List<PrimitiveObjectToy> SpawnedObjects = new List<PrimitiveObjectToy>();
-
         public void Awake()
         {
             Player = Player.Get(gameObject);
-            foreach (Bullet bullet in Utils.Bullets)
+            foreach (PrimitiveObjectToy primitive in Utils.SpawnedPrimitives)
             {
-                AddNewBullet(bullet);
+                NetworkServer.SendSpawnMessage(primitive.netIdentity, Player.Connection);
             }
         }
 
@@ -47,7 +44,7 @@ namespace NWAPIBulletHoleVisualizer
                     if (!playerIdsAdded.Contains(bullet.UserId))
                     {
                         playerIdsAdded.Add(bullet.UserId);
-                        added.Add($"\n<size=18><align=left><color={UserToColor[bullet.UserId].ToHex()}>{bullet.Name}{(IsAdmin ? $" ({bullet.UserId})" : "")}</color></align></size>");
+                        added.Add($"\n<size=18><align=left><color={Utils.UserToColor[bullet.UserId].ToHex()}>{bullet.Name}{(IsAdmin ? $" ({bullet.UserId})" : "")}</color></align></size>");
                     }
                 }
 
@@ -55,39 +52,8 @@ namespace NWAPIBulletHoleVisualizer
             }
         }
 
-        public void AddNewBullet(Bullet bullet)
-        {
-            if (!UserToColor.ContainsKey(bullet.UserId))
-            {
-                UserToColor[bullet.UserId] = Utils.Colors[UserToColor.Count % Utils.Colors.Length];
-            }
-            SpawnBullet(bullet, UserToColor[bullet.UserId]);
-        }
-
-        private void SpawnBullet(Bullet bullet, Color color)
-        {
-            PrimitiveObjectToy primitive = Instantiate(Utils.PrimitiveBaseObject);
-            SpawnedObjects.Add(primitive);
-            primitive.transform.position = bullet.Position;
-            primitive.transform.localScale = new Vector3(-0.05f, -0.05f, -0.05f);
-            NetworkServer.Spawn(primitive.gameObject);
-            foreach (Player player in Player.GetPlayers())
-            {
-                if (player != Player)
-                    player.Connection.Send(new ObjectDestroyMessage() { netId = primitive.netId });
-            }
-            primitive.NetworkPosition = primitive.transform.position;
-            primitive.NetworkScale = primitive.transform.localScale;
-            primitive.NetworkPrimitiveType = PrimitiveType.Sphere;
-            primitive.NetworkMaterialColor = color;
-        }
-
         public void Destroy()
         {
-            foreach(PrimitiveObjectToy primitive in SpawnedObjects)
-            {
-                NetworkServer.Destroy(primitive.gameObject);
-            }
             Active = false;
             DestroyImmediate(this);
         }
