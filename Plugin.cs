@@ -21,7 +21,7 @@ namespace NWAPIBulletHoleVisualizer
 
         public static PluginHandler PluginHandler { get; private set; }
 
-        [PluginPriority(LoadPriority.Highest)]
+        [PluginPriority(LoadPriority.Lowest)]
         [PluginEntryPoint("NW Bullet Hole Visualizer", "1.3.1", "NW Bullet Hole Visualizer", "Steven4547466")]
         void LoadPlugin()
         {
