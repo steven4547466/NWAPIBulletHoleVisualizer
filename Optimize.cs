@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace NWAPIBulletHoleVisualizer
 {
-    [HarmonyPatch(typeof(AdminToyBase), nameof(AdminToyBase.LateUpdate))]
-    public class Optimize
-    {
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            yield return new CodeInstruction(OpCodes.Ret);
-        }
-    }
+    //[HarmonyPatch(typeof(AdminToyBase), nameof(AdminToyBase.LateUpdate))]
+    //public class Optimize
+    //{
+    //    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    //    {
+    //        yield return new CodeInstruction(OpCodes.Ret);
+    //    }
+    //}
 }

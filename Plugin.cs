@@ -22,7 +22,7 @@ namespace NWAPIBulletHoleVisualizer
         public static PluginHandler PluginHandler { get; private set; }
 
         [PluginPriority(LoadPriority.Highest)]
-        [PluginEntryPoint("NW Bullet Hole Visualizer", "1.2.0", "NW Bullet Hole Visualizer", "Steven4547466")]
+        [PluginEntryPoint("NW Bullet Hole Visualizer", "1.3.0", "NW Bullet Hole Visualizer", "Steven4547466")]
         void LoadPlugin()
         {
             Singleton = this;
